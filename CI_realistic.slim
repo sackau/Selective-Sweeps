@@ -1,0 +1,60 @@
+
+initialize()
+{
+         initializeMutationRate(1e-7);
+         initializeMutationType("m1", 0.5, "f", 0.0);
+         //initializeMutationType("m2", 0.5, "f", 0.05);
+         initializeMutationType("m2", 0.5, "e", 0.1);
+         initializeGenomicElementType("g1", c(m1, m2), c(0.99,0.01) );
+         initializeGenomicElement(g1, 1, 999);
+         initializeRecombinationRate(0);
+       	m1.mutationStackPolicy = "f";
+       	m2.mutationStackPolicy = "f";
+       	//defineConstant("num_subs", 0);
+       	defineGlobal("num_subs", 0);
+       	defineConstant("Na", 1000);
+       	defineConstant("num_gen_burnin", 10*Na);
+       	//defineConstant("num_gen_output", num_gen_burnin+(5*Na));
+       	defineGlobal("num_gen_output", num_gen_burnin+(5*Na));
+}
+
+1 early()
+{
+			defineConstant("simID", getSeed());
+         sim.addSubpop("p1", 1000);
+}
+
+10000 late() // burn in till 10 N generations
+{
+			sim.outputFull(tempdir() + "slim_" + simID + ".txt");
+        // introduce the sweep mutation
+        //target = sample(p1.genomes, 1);
+        
+        //target.addNewDrawnMutation(m2, 0); // only one mutation is added at position 0
+}
+
+
+10000:100000 late()
+{
+			if (sum(sim.substitutions.mutationType == m2) > num_subs)
+    {
+        catn("beneficial sweep completed in generation " + sim.cycle + ".");
+        sampledGen = sample(p1.genomes, 2000, replace=F);
+		sampledGen.output(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_postfixation_" + sim.cycle + ".txt", append=F);
+        //sampledGen.outputMS(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_postfixation_" + sim.cycle + ".ms", append=F);
+        p1.individuals.genomes.outputMS(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_postfixation_" + sim.cycle + ".ms", append=F);
+        //rm("num_subs", removeConstants=T);
+        //defineConstant("num_subs", sum(sim.substitutions.mutationType == m2));
+        defineGlobal("num_subs", sum(sim.substitutions.mutationType == m2));
+    }
+    if (sim.cycle == num_gen_output) //output periodically after every 5N generations
+    {
+    	sampledGen = sample(p1.genomes, 2000, replace=F);
+    	sampledGen.output(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_gen" + num_gen_output + ".txt", append=F);
+    	sampledGen.outputMS(filePath= "/Users/johri_lab/Downloads/SFS_project/real_pop/output_gen" + num_gen_output + ".ms", append=F);
+    	sim.outputFixedMutations(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_gen" + num_gen_output + ".fixed", append=F);
+      //rm("num_gen_output", removeConstants=T);
+      //defineConstant("num_gen_output", sim.cycle + (5*Na));
+      defineGlobal("num_gen_output", sim.cycle + (5*Na));
+    }
+}
