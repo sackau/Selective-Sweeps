@@ -5,8 +5,9 @@ initialize()
          initializeMutationType("m1", 0.5, "f", 0.0);
          initializeMutationType("m2", 0.5, "f", 0.05);
          initializeMutationType("m3", 0.5, "e", 0.1);
-         initializeGenomicElementType("g1", c(m1, m2), c(0.99,0.01) );
-         initializeGenomicElement(g1, 1, 999);
+         //initializeGenomicElementType("g1", c(m1, m2), c(0.99,0.01) );
+	initializeGenomicElementType("g1", c(m1, m2, m3), c(0.99,0.005, 0.005) );
+         initializeGenomicElement(g1, 1, 10000);
          initializeRecombinationRate(0);
        	m1.mutationStackPolicy = "f";
        	m2.mutationStackPolicy = "f";
