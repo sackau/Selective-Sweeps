@@ -23,7 +23,7 @@ initialize()
 
 1 early()
 {
-			defineConstant("simID", getSeed());
+	defineConstant("simID", getSeed());
          sim.addSubpop("p1", 1000);
 }
 
@@ -39,11 +39,11 @@ initialize()
 
 10000:100000 late()
 {
-			if (sum(sim.substitutions.mutationType == m2) > num_subs)
+if (sum(sim.substitutions.mutationType == m2) > num_subs)
     {
         catn("beneficial sweep completed in generation " + sim.cycle + ".");
         sampledGen = sample(p1.genomes, 2000, replace=F);
-		sampledGen.output(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_postfixation_" + sim.cycle + ".txt", append=F);
+	sampledGen.output(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_postfixation_" + sim.cycle + ".txt", append=F);
         //sampledGen.outputMS(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_postfixation_" + sim.cycle + ".ms", append=F);
         p1.individuals.genomes.outputMS(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_postfixation_" + sim.cycle + ".ms", append=F);
         //rm("num_subs", removeConstants=T);
