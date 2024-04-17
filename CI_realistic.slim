@@ -47,14 +47,4 @@ initialize()
         //defineConstant("num_subs", sum(sim.substitutions.mutationType == m2));
         defineGlobal("num_subs", sum(sim.substitutions.mutationType == m2));
     }
-    if (sim.cycle == num_gen_output) //output periodically after every 5N generations
-    {
-    	sampledGen = sample(p1.genomes, 2000, replace=F);
-    	sampledGen.output(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_gen" + num_gen_output + ".txt", append=F);
-    	sampledGen.outputMS(filePath= "/Users/johri_lab/Downloads/SFS_project/real_pop/output_gen" + num_gen_output + ".ms", append=F);
-    	sim.outputFixedMutations(filePath="/Users/johri_lab/Downloads/SFS_project/real_pop/output_gen" + num_gen_output + ".fixed", append=F);
-      //rm("num_gen_output", removeConstants=T);
-      //defineConstant("num_gen_output", sim.cycle + (5*Na));
-      defineGlobal("num_gen_output", sim.cycle + (5*Na));
-    }
 }
