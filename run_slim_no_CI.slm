@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#SBATCH --mail-user=sackau@unc.edu
+#SBATCH --mail-type=ALL
+#SBATCH -p general
+#SBATCH -N 1
+#SBATCH -t 00-72:00:00
+#SBATCH --mem=2g
+#SBATCH -a 1-1000  # Array job 1-1000
+#SBATCH -n 1       # 1 core for each task
+#SBATCH -o /nas/longleaf/home/sackau/LOGFILES/CI/test_%A_%a.o
+#SBATCH -e /nas/longleaf/home/sackau/LOGFILES/CI/test_%A_%a.e
+
+# Check if SLURM_ARRAY_TASK_ID is set
+if [[ -z "$SLURM_ARRAY_TASK_ID" ]]; then
+   echo "SLURM_ARRAY_TASK_ID is not set!"
+   exit 1
+fi
+
+# Define the directory for output based on the SLURM_ARRAY_TASK_ID
+OUTPUT_DIR="/work/users/s/a/sackau/UNC_work/time_dependent/Ns_100/Ns_100_CI/Parul_simulations/faster_simulations/no_CI/dist_files/$SLURM_ARRAY_TASK_ID"
+mkdir -p $OUTPUT_DIR
+
+# Change to the output directory
+cd $OUTPUT_DIR
+
+# Load the required SLiM module
+module load slim
+
+# Execute the SLiM simulation script
+slim /work/users/s/a/sackau/UNC_work/time_dependent/Ns_100/Ns_100_CI/Parul_simulations/faster_simulations/no_CI/No_CI_faster.slim
+
+echo "SLURM_ARRAY_TASK_ID: $SLURM_ARRAY_TASK_ID - Simulation completed."
