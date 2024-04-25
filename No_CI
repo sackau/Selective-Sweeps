@@ -1,0 +1,45 @@
+initialize()
+{
+        initializeMutationRate(1e-7);
+        initializeMutationType("m1", 0.5, "f", 0.0);
+        initializeMutationType("m2", 0.5, "f", 0.05);
+        initializeMutationType("m3", 0.5, "f", 0.0);
+        initializeGenomicElementType("g1", c(m1, m2, m3), c(0.9995,0.0005, 0) );
+        initializeGenomicElement(g1, 0, 999);
+        initializeGenomicElementType("g2", m1, 1 );
+        initializeGenomicElement(g2, 1000, 11000);
+        initializeRecombinationRate(0);
+        m1.mutationStackPolicy = "f";
+        m2.mutationStackPolicy = "f";
+        defineGlobal("num_subs", 0);
+        defineConstant("Na", 1000);
+}
+
+1 early()
+{
+	defineConstant("simID", getSeed());
+    sim.addSubpop("p1", 1000);
+}
+
+10000 late() // burn in till 10 N generations
+{
+	defineGlobal("num_subs", sum(sim.substitutions.mutationType == m2));
+	defineGlobal("counts", 0);
+}
+
+
+10000:200000000 late()
+{
+if (sum(sim.substitutions.mutationType == m2) > num_subs)
+    {
+    	  defineGlobal("counts", counts+1);
+        p1.individuals.genomes.outputMS(filePath="output_postfixation_" + counts + ".ms", append=F);
+        defineGlobal("num_subs", sum(sim.substitutions.mutationType == m2));
+        
+        if(counts>1000)
+        {
+        	sim.simulationFinished();
+        }
+    }
+   
+}
