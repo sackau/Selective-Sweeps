@@ -1,0 +1,54 @@
+initialize()
+{
+        initializeMutationRate(1e-7);
+        initializeMutationType("m1", 0.5, "f", 0.0);
+        initializeMutationType("m2", 0.5, "f", 0.05);
+        initializeMutationType("m3", 0.5, "e", 0.1); // exponential
+        initializeGenomicElementType("g1", c(m1, m2, m3), c(0.945,0.005, 0.05) );// m1 neutral, m2 selected fixed, m3 will be interferring
+		initializeGenomicElement(g1, 0, 999);
+		initializeGenomicElementType("g2", m1, 1 ); // full element is neutral
+		initializeGenomicElement(g2, 1000, 11000); // g2 is neutral
+        initializeRecombinationRate(0);
+       	//m1.mutationStackPolicy = "f";
+       	//m2.mutationStackPolicy = "f";
+		c(m1,m2,m3).mutationStackGroup = 1;
+		c(m1,m2,m3).mutationStackPolicy = "f";
+       	//defineConstant("num_subs", 0);
+       	defineGlobal("num_subs", 0);
+       	defineConstant("Na", 1000);
+       	defineConstant("num_gen_burnin", 10*Na);
+       	//defineConstant("num_gen_output", num_gen_burnin+(5*Na));
+       	defineGlobal("num_gen_output", num_gen_burnin+(5*Na));
+}
+
+1 early()
+{
+	defineConstant("simID", getSeed());
+    sim.addSubpop("p1", 1000);
+}
+
+10000 late() // burn in till 10 N generations
+{
+	
+	defineGlobal("num_subs", sum(sim.substitutions.mutationType == m2));
+	defineGlobal("counts", 0);
+	
+}
+
+
+10000:200000000 late()
+{
+if (sum(sim.substitutions.mutationType == m2) > num_subs)
+    {
+    	defineGlobal("counts", counts+1);
+        
+        defineGlobal("num_subs", sum(sim.substitutions.mutationType == m2));
+        
+		sim.outputFull();
+        if(counts>0)
+        {
+        	sim.simulationFinished();
+        }
+    }
+   
+}
